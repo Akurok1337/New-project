@@ -100,36 +100,18 @@ class Boss(GameSprite):
             score = font.render('Score: ' + str(killed), True, (255, 215, 0))
             self.kill()
 
-
-    
+ufos = sprite.Group()
 
 rocket = Player(50, 400, "rocket.png", 10, size = (65, 65))
-ufo = Enemy(300, 105, "ufo.png", 5, size = (65, 65), hp = (1))
-ufo2 = Enemy(400, 110, "ufo.png", 5, size = (65, 65), hp = (1))
-ufo3 = Enemy(200, 125, "ufo.png", 5, size = (65, 65), hp = (1))
-ufo4 = Enemy(500, 100, "ufo.png", 5, size = (65, 65), hp = (1))
-ufo5 = Enemy(600, 130, "ufo.png", 5, size = (65, 65), hp = (1))
-ufo6 = Enemy(650, 120, "ufo.png", 5, size = (65, 65), hp = (1))
-ufo7 = Enemy(250, 111, "ufo.png", 5, size = (65, 65), hp = (1))
-ufo8 = Enemy(350, 109, "ufo.png", 5, size = (65, 65), hp = (1))
-ufo9 = Enemy(450, 149, "ufo.png", 5, size = (65, 65), hp = (1))
-ufo10 = Enemy(550, 150, "ufo.png", 5, size = (65, 65), hp = (1))
-boss = Enemy(600, 119, "boss.png", 1, size = (80, 80), hp = (5))
+boss = Boss(600, 19, "boss.png", 1, size = (80, 80), hp = (5))
 bullet = Bullet(50, 400, 'chidori.png', 5, size = (20,20))
 
+for i in range(0, 20):
+    ufo = Enemy(randint(20, 650), 105, "ufo.png", 3, size = (65, 65), hp = (1)) 
+    ufos.add(ufo)
 
 
-ufos = sprite.Group()
-ufos.add(ufo)
-ufos.add(ufo2)
-ufos.add(ufo3)
-ufos.add(ufo4)
-ufos.add(ufo5)
-ufos.add(ufo6)
-ufos.add(ufo7)
-ufos.add(ufo8)
-ufos.add(ufo9)
-ufos.add(ufo10)
+
 
 
 bullets = sprite.Group()
@@ -183,7 +165,7 @@ while game:
 
 
         
-        if killed > 10 and killed < 12:
+        if killed > 15 and killed < 17:
             window.blit(bossf, (200, 250))
             for ufo in ufos:
                 ufo.kill()
@@ -191,7 +173,7 @@ while game:
             boss.update()
             finish = False
         
-        if killed > 11:
+        if killed > 16:
             window.blit(win, (200, 250))
             finish = True
 
