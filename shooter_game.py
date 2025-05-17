@@ -33,7 +33,7 @@ class Player(GameSprite):
         if self.can_fire:
             keys = key.get_pressed()
             if keys[K_SPACE]:
-                bullets.add(Bullet(self.rect.centerx, self.rect.top, 'bullet.png', 5, (10, 10)))
+                bullets.add(Bullet(self.rect.centerx, self.rect.top, 'chidori.png', 5, (20, 20)))
             self.can_fire = False
         else:
             global FPS
@@ -44,6 +44,9 @@ class Player(GameSprite):
                 self.cur_reload = 0 
 
 class Enemy(GameSprite):
+    def __init__(self, player_x, player_y, player_image, player_speed, size, hp = 1):
+        super().__init__(player_x, player_y, player_image, player_speed, size)
+        self.hp = hp
     def update(self):
         self.rect.y += self.speed
         if self.rect.y > 500:
@@ -53,6 +56,17 @@ class Enemy(GameSprite):
             alive += 1
             global skip
             skip = font.render('Skipped: ' + str(alive), True, (255, 215, 0))
+    
+    def take_damage(self):
+        self.hp = self.hp - 1
+        if self.hp == 0:
+            global killed
+            killed += 1
+            ufo = Enemy(randint(20, 650), 100, "ufo.png", 5, size = (65, 65), hp = (1))
+            ufos.add(ufo)
+            global score
+            score = font.render('Score: ' + str(killed), True, (255, 215, 0))
+            self.kill()
 
 
 
@@ -61,24 +75,47 @@ class Bullet(GameSprite):
     def update(self):
         self.rect.y -= self.speed
         if self.rect.y < 0:
-            bullet.kill() 
+            self.kill() 
         
+class Boss(GameSprite):
+    def __init__(self, player_x, player_y, player_image, player_speed, size, hp = 5):
+        super().__init__(player_x, player_y, player_image, player_speed, size)
+        self.hp = hp
+    def update(self):
+        self.rect.y += self.speed
+        if self.rect.y > 500:
+            self.rect.y = 0
+            self.rect.x = randint(30, 630)
+            global alive
+            alive += 1
+            global skip
+            skip = font.render('Skipped: ' + str(alive), True, (255, 215, 0))
+    
+    def take_damage(self):
+        self.hp = self.hp - 1
+        if self.hp == 0:
+            global killed
+            killed += 1
+            global score
+            score = font.render('Score: ' + str(killed), True, (255, 215, 0))
+            self.kill()
 
 
     
 
 rocket = Player(50, 400, "rocket.png", 10, size = (65, 65))
-ufo = Enemy(300, 100, "ufo.png", 5, size = (65, 65))
-ufo2 = Enemy(400, 100, "ufo.png", 5, size = (65, 65))
-ufo3 = Enemy(200, 100, "ufo.png", 5, size = (65, 65))
-ufo4 = Enemy(500, 100, "ufo.png", 5, size = (65, 65))
-ufo5 = Enemy(600, 100, "ufo.png", 5, size = (65, 65))
-ufo6 = Enemy(650, 100, "ufo.png", 5, size = (65, 65))
-ufo7 = Enemy(250, 100, "ufo.png", 5, size = (65, 65))
-ufo8 = Enemy(350, 100, "ufo.png", 5, size = (65, 65))
-ufo9 = Enemy(450, 100, "ufo.png", 5, size = (65, 65))
-ufo10 = Enemy(550, 100, "ufo.png", 5, size = (65, 65))
-bullet = Bullet(50, 400, 'bullet.png', 5, size = (10,10))
+ufo = Enemy(300, 105, "ufo.png", 5, size = (65, 65), hp = (1))
+ufo2 = Enemy(400, 110, "ufo.png", 5, size = (65, 65), hp = (1))
+ufo3 = Enemy(200, 125, "ufo.png", 5, size = (65, 65), hp = (1))
+ufo4 = Enemy(500, 100, "ufo.png", 5, size = (65, 65), hp = (1))
+ufo5 = Enemy(600, 130, "ufo.png", 5, size = (65, 65), hp = (1))
+ufo6 = Enemy(650, 120, "ufo.png", 5, size = (65, 65), hp = (1))
+ufo7 = Enemy(250, 111, "ufo.png", 5, size = (65, 65), hp = (1))
+ufo8 = Enemy(350, 109, "ufo.png", 5, size = (65, 65), hp = (1))
+ufo9 = Enemy(450, 149, "ufo.png", 5, size = (65, 65), hp = (1))
+ufo10 = Enemy(550, 150, "ufo.png", 5, size = (65, 65), hp = (1))
+boss = Enemy(600, 119, "boss.png", 1, size = (80, 80), hp = (5))
+bullet = Bullet(50, 400, 'chidori.png', 5, size = (20,20))
 
 
 
@@ -111,8 +148,9 @@ font.init()
 font = font.SysFont('Arial', 70)
 score = font.render('Score: 0', True, (255, 215, 0))
 skip = font.render('Skipped: 0', True, (255, 215, 0)) 
-win = font.render('Win!', True, (255, 215, 0))
 fail = font.render('Fail!', True, (255, 215, 0))
+bossf = font.render('Boss', True, (255, 215, 0))
+win = font.render("Win!", True, (255, 215, 0))
 
 killed = 0
 alive = 0
@@ -132,20 +170,32 @@ while game:
         rocket.fire()
         window.blit(score, (0,0))
         window.blit(skip, (0,50))
+
         
 
+        collided = sprite.groupcollide(ufos, bullets, False, True)
+        collidedb = sprite.spritecollide(boss, bullets, True)
+        if collided:
+            for ufo, bullet in collided.items():
+                ufo.take_damage()
+        if collidedb:
+            boss.take_damage()
 
-        if sprite.groupcollide(ufos, bullets, True, False):
-            ufo = Enemy(randint(20, 650), 100, "ufo.png", 5, size = (65, 65))
-            ufos.add(ufo)
-            killed += 1
-            score = font.render('Score: ' + str(killed), True, (255, 215, 0))
+
         
-        if killed > 10:
+        if killed > 10 and killed < 12:
+            window.blit(bossf, (200, 250))
+            for ufo in ufos:
+                ufo.kill()
+            boss.reset()
+            boss.update()
+            finish = False
+        
+        if killed > 11:
             window.blit(win, (200, 250))
             finish = True
 
-        if alive > 20:
+        if alive > 50:
             window.blit(fail, (200,250))
             finish = True
         
