@@ -2,7 +2,7 @@ from pygame import *
 from random import randint
 window = display.set_mode((700, 500))
 display.set_caption('Шутер')
-background = transform.scale(image.load('galaxy.jpg'), (700,500))
+background = transform.scale(image.load('galaxy.png'), (700,500))
 
 class GameSprite(sprite.Sprite):
     def __init__(self, player_x, player_y, player_image, player_speed, size):
@@ -107,7 +107,7 @@ boss = Boss(600, 19, "boss.png", 1, size = (80, 80), hp = (5))
 bullet = Bullet(50, 400, 'chidori.png', 5, size = (20,20))
 
 for i in range(0, 20):
-    ufo = Enemy(randint(20, 650), 105, "ufo.png", 3, size = (65, 65), hp = (1)) 
+    ufo = Enemy(randint(20, 650), 105, "ufo.png", 3, size = (80, 80), hp = (1)) 
     ufos.add(ufo)
 
 
